@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
         temperature=0.1,
     )
     app.state.redis = StrictRedis(
-        host='localhost',
+        host=settings.REDIS_HOST,
         port=6379,
         decode_responses=True
     )
