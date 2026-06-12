@@ -100,15 +100,15 @@ async def create_user(
     """Создание пользователя"""
     hashed_password = get_password_hash(user_create.password)
     user = await get_user(user_create.username, session)
-    if user is None:
-        user = User(
-            username=user_create.username,
-            email=user_create.email,
-            hashed_password=hashed_password
+    if user:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail='Username already exists'
         )
-    else:
-        user.email = user_create.email
-        user.hashed_password = hashed_password
+    user = User(
+        username=user_create.username,
+        hashed_password=hashed_password
+    )
     session.add(user)
     await session.commit()
     await session.refresh(user)

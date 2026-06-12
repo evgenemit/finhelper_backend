@@ -1,13 +1,12 @@
+from __future__ import annotations
 from decimal import Decimal
 from datetime import datetime
 from sqlmodel import Field, SQLModel, Relationship
-from pydantic import EmailStr
 from sqlalchemy import func
 
 
 class UserBase(SQLModel):
     username: str = Field(unique=True)
-    email: EmailStr = Field(unique=True)
 
 
 class User(UserBase, table=True):
@@ -29,7 +28,6 @@ class UserCreate(UserBase):
 
 class UserUpdate(UserBase):
     username: str | None = None
-    email: EmailStr | None = None
     password: str | None = None
     new_password: str | None = None
 
