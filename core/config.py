@@ -8,7 +8,8 @@ class Settings(BaseSettings):
     DB_PASS: str
     DB_NAME: str
 
-    BOT_TOKEN: str
+    SECRET_KEY: str
+    DEEPSEEK_KEY: str
 
     @property
     def database_url(self) -> str:

@@ -1,3 +1,5 @@
+from fastapi import Request
+from redis.asyncio import StrictRedis
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -17,3 +19,7 @@ async def get_db():
         except Exception as e:
             await session.rollback()
             raise e
+
+
+async def get_redis(request: Request) -> StrictRedis:
+    return request.app.state.redis

@@ -99,11 +99,16 @@ async def create_user(
 ) -> UserPublic:
     """Создание пользователя"""
     hashed_password = get_password_hash(user_create.password)
-    user = User(
-        username=user_create.username,
-        email=user_create.email,
-        hashed_password=hashed_password
-    )
+    user = await get_user(user_create.username, session)
+    if user is None:
+        user = User(
+            username=user_create.username,
+            email=user_create.email,
+            hashed_password=hashed_password
+        )
+    else:
+        user.email = user_create.email
+        user.hashed_password = hashed_password
     session.add(user)
     await session.commit()
     await session.refresh(user)
