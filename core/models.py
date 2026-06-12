@@ -15,7 +15,10 @@ class User(UserBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     hashed_password: str
 
-    categories: list[Category] = Relationship(back_populates='user')
+    categories: list[Category] = Relationship(
+        back_populates='user',
+        cascade_delete=True
+    )
 
 
 class UserPublic(UserBase):
@@ -50,7 +53,8 @@ class Category(CategoryBase, table=True):
     user: User = Relationship(back_populates='categories')
     transactions: list[Transaction] = Relationship(
         back_populates='category',
-        sa_relationship_kwargs={'order_by': 'Transaction.created_at.desc()'}
+        sa_relationship_kwargs={'order_by': 'Transaction.created_at.desc()'},
+        cascade_delete=True
     )
 
 
