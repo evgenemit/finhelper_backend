@@ -1,4 +1,3 @@
-from __future__ import annotations
 from decimal import Decimal
 from datetime import datetime
 from sqlmodel import Field, SQLModel, Relationship
@@ -15,7 +14,7 @@ class User(UserBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     hashed_password: str
 
-    categories: list[Category] = Relationship(
+    categories: list['Category'] = Relationship(
         back_populates='user',
         cascade_delete=True
     )
@@ -51,7 +50,7 @@ class Category(CategoryBase, table=True):
     user_id: int = Field(foreign_key='users.id')
 
     user: User = Relationship(back_populates='categories')
-    transactions: list[Transaction] = Relationship(
+    transactions: list['Transaction'] = Relationship(
         back_populates='category',
         sa_relationship_kwargs={'order_by': 'Transaction.created_at.desc()'},
         cascade_delete=True
@@ -65,7 +64,7 @@ class CategoryPublic(CategoryBase):
 class CategoryDetailPublic(CategoryBase):
     id: int
     amount: Decimal = Field(default=0, max_digits=7, decimal_places=2)
-    transactions: list[TransactionPublic]
+    transactions: list['TransactionPublic']
 
 
 class TransactionBase(SQLModel):
