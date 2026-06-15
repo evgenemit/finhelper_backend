@@ -47,7 +47,7 @@ class Category(CategoryBase, table=True):
     __tablename__ = 'categories'
 
     id: int = Field(primary_key=True)
-    user_id: int = Field(foreign_key='users.id')
+    user_id: int = Field(foreign_key='users.id', ondelete='CASCADE')
 
     user: User = Relationship(back_populates='categories')
     transactions: list['Transaction'] = Relationship(
@@ -80,7 +80,7 @@ class Transaction(TransactionBase, table=True):
         default_factory=datetime.now,
         sa_column_kwargs={'server_default': func.now()}
     )
-    category_id: int = Field(foreign_key='categories.id')
+    category_id: int = Field(foreign_key='categories.id', ondelete='CASCADE')
 
     category: Category = Relationship(back_populates='transactions')
 

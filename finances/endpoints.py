@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlmodel import select
+from sqlmodel import select, delete
 from sqlalchemy.orm import selectinload
 from sqlalchemy import func, and_, desc
 from typing import Annotated
@@ -119,6 +119,45 @@ async def get_category(
         amount=amount,
         transactions=category.transactions,
     )
+
+
+@router.delete('/categories/{category_id}/')
+async def delete_category(
+    category_id: int,
+    user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[AsyncSession, Depends(get_db)]
+):
+    stmt = select(Category).where(and_(
+        Category.user_id == user.id,
+        Category.id == category_id
+    ))
+    category = (await session.exec(stmt)).first()
+    if category:
+        await session.delete(category)
+        await session.commit()
+        return {'status': True}
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+
+@router.patch('/categories/{category_id}/', response_model=CategoryPublic)
+async def update_category(
+    category_id: int,
+    category_update: CategoryBase,
+    user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[AsyncSession, Depends(get_db)]
+) -> CategoryPublic:
+    stmt = select(Category).where(and_(
+        Category.user_id == user.id,
+        Category.id == category_id
+    ))
+    category = (await session.exec(stmt)).first()
+    if category is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    category.name = category_update.name
+    session.add(category)
+    await session.commit()
+    await session.refresh(category)
+    return category
 
 
 @router.post('/transactions/', response_model=TransactionPublic)
